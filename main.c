@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <stdlib.h>
 #include "vm.c"
 
 int main(){
@@ -7,11 +8,13 @@ int main(){
 
 	// th 15
 	
-	for(int i=0; i<300; i++){
+	printf("Program Start \n");
+	for(int i=0; i<10; i++){
 		push_int(vm, i);
-		if(i%5==0){
+		if(rand()%10>5){
 			pop(vm);
 		}
 	}
+	printf("Program End \n");
 }
 

@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 #define STACK_MAX 256
-#define INITIAL_GC_THRESHOLD 15
+#define INITIAL_GC_THRESHOLD 5
 
 typedef enum {
 	OBJ_INT,	
