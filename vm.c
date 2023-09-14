@@ -25,6 +25,17 @@ typedef struct sObject{
 	};
 }Object;
 
+void print(Object* start){
+	while(start){
+		if(start->type == OBJ_OBJ){
+			printf("Object = (marked)\n");
+		}else{
+			printf("Integer = %d(marked)\n", start->value);
+		}
+		start = start->next;
+	}
+}
+
 
 typedef struct{
 	Object* stack[STACK_MAX];
@@ -64,26 +75,32 @@ void markAll(VM* vm){
 }
 
 void sweep(VM* vm){
+	Object* prev = NULL;
 	Object* obj = vm->obj_head;
-	
+
 	printf("Sweeping\n");
 	while(obj){
 		if(!(obj->marked)){
 			Object* temp = obj;
+
+			if(prev){
+				prev->next = obj->next;
+			}else{
+				vm->obj_head = obj->next;
+			}
 			obj = obj->next;
-			if(temp == vm->obj_head){ // setting new head if the node to be deleted is the current head 
-				vm->obj_head = obj;
+			vm->num_objects--;
+
+			if(temp->type == OBJ_OBJ){
+				printf("Clearing object\n");
+			}else{
+				printf("Clearing integer %d\n", temp->value);
 			}
 
-			if(temp->type==OBJ_OBJ){
-				printf("Clearing Object\n");
-			}else{
-				printf("Clearing Integer %d\n", temp->value);
-			}
-			vm->num_objects--;
 			free(temp);
 		}else{
 			obj->marked = 0;
+			prev = obj;
 			obj = obj->next;
 		}
 	}
@@ -101,7 +118,7 @@ void garbage_collect(VM* vm){
 }
 
 Object* create_obj(VM* vm){
-	if(vm->num_objects == vm->max_objects){
+	if(vm->num_objects >= vm->max_objects){
 		garbage_collect(vm);
 	} 
 	Object* obj = malloc(sizeof(Object));
@@ -151,15 +168,4 @@ void push_obj(VM* vm){
 	push(vm, obj);
 }
 
-
-void print(Object* start){
-	while(start){
-		if(start->type == OBJ_OBJ){
-			printf("Object = %d(marked)\n", start->marked);
-		}else{
-			printf("Integer = %d(marked)\n", start->marked);
-		}
-		start = start->next;
-	}
-}
 
